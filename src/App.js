@@ -264,6 +264,7 @@ export default function FPLDashboard() {
   const [minPrice, setMinPrice] = useState(4);
   const [sortBy, setSortBy] = useState('value');
   const [securityLog, setSecurityLog] = useState([]);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const addSecurityLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
@@ -430,6 +431,140 @@ export default function FPLDashboard() {
   return (
     <div style={styles.app}>
       <div style={styles.container}>
+        {selectedPlayer && (
+          <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'}} onClick={() => setSelectedPlayer(null)}>
+            <div style={{background: 'linear-gradient(135deg, #1e1b4b 0%, #1e3a8a 50%, #312e81 100%)', borderRadius: '16px', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto', border: '2px solid rgba(147, 51, 234, 0.5)'}} onClick={(e) => e.stopPropagation()}>
+              <div style={{padding: '24px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px'}}>
+                  <div>
+                    <h2 style={{color: 'white', fontSize: '28px', fontWeight: 'bold', margin: '0 0 8px 0'}}>{selectedPlayer.name}</h2>
+                    <p style={{color: '#e9d5ff', fontSize: '16px', margin: 0}}>{selectedPlayer.team} • {selectedPlayer.position}</p>
+                  </div>
+                  <button onClick={() => setSelectedPlayer(null)} style={{background: 'rgba(255, 255, 255, 0.1)', border: 'none', color: 'white', fontSize: '24px', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer'}}>×</button>
+                </div>
+                
+                <div style={{background: 'linear-gradient(90deg, #9333ea, #3b82f6)', borderRadius: '12px', padding: '20px', marginBottom: '20px', textAlign: 'center'}}>
+                  <div style={{color: 'white', fontSize: '14px', marginBottom: '8px'}}>VALUE SCORE</div>
+                  <div style={{color: 'white', fontSize: '48px', fontWeight: 'bold'}}>{selectedPlayer.valueScore}</div>
+                  <div style={{color: '#e9d5ff', fontSize: '13px', marginTop: '8px'}}>
+                    {selectedPlayer.valueScore >= 15 ? '🔥 Excellent Value' : selectedPlayer.valueScore >= 12 ? '⭐ Very Good Value' : selectedPlayer.valueScore >= 9 ? '✅ Good Value' : '👍 Decent Value'}
+                  </div>
+                </div>
+
+                {selectedPlayer.momentum === 'hot' && (
+                  <div style={{background: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', borderRadius: '8px', padding: '12px', marginBottom: '20px', textAlign: 'center'}}>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#4ade80', fontWeight: 'bold'}}>
+                      <TrendingUp size={20} />
+                      <span>Player is on a HOT STREAK! Form {selectedPlayer.form} vs Season Avg {selectedPlayer.points_per_game}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px'}}>
+                  <div style={{background: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '16px'}}>
+                    <div style={{color: '#9ca3af', fontSize: '12px', marginBottom: '4px'}}>Price</div>
+                    <div style={{color: '#4ade80', fontSize: '24px', fontWeight: 'bold'}}>£{selectedPlayer.price}m</div>
+                  </div>
+                  <div style={{background: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '16px'}}>
+                    <div style={{color: '#9ca3af', fontSize: '12px', marginBottom: '4px'}}>Total Points</div>
+                    <div style={{color: '#60a5fa', fontSize: '24px', fontWeight: 'bold'}}>{selectedPlayer.total_points}</div>
+                  </div>
+                  <div style={{background: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '16px'}}>
+                    <div style={{color: '#9ca3af', fontSize: '12px', marginBottom: '4px'}}>Form (Recent)</div>
+                    <div style={{color: '#facc15', fontSize: '24px', fontWeight: 'bold'}}>{selectedPlayer.form}</div>
+                  </div>
+                  <div style={{background: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '16px'}}>
+                    <div style={{color: '#9ca3af', fontSize: '12px', marginBottom: '4px'}}>Points Per Game</div>
+                    <div style={{color: '#c084fc', fontSize: '24px', fontWeight: 'bold'}}>{selectedPlayer.points_per_game}</div>
+                  </div>
+                </div>
+
+                <div style={{background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '16px', marginBottom: '20px'}}>
+                  <h3 style={{color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px'}}>Performance Stats</h3>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px'}}>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{color: '#9ca3af', fontSize: '12px'}}>⚽ Goals</div>
+                      <div style={{color: 'white', fontSize: '20px', fontWeight: 'bold'}}>{selectedPlayer.goals}</div>
+                    </div>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{color: '#9ca3af', fontSize: '12px'}}>🎯 Assists</div>
+                      <div style={{color: 'white', fontSize: '20px', fontWeight: 'bold'}}>{selectedPlayer.assists}</div>
+                    </div>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{color: '#9ca3af', fontSize: '12px'}}>🛡️ Clean Sheets</div>
+                      <div style={{color: 'white', fontSize: '20px', fontWeight: 'bold'}}>{selectedPlayer.clean_sheets}</div>
+                    </div>
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{color: '#9ca3af', fontSize: '12px'}}>Expected Goals (xG)</div>
+                      <div style={{color: '#fbbf24', fontSize: '20px', fontWeight: 'bold'}}>{selectedPlayer.expected_goals.toFixed(2)}</div>
+                      <div style={{color: selectedPlayer.goals > selectedPlayer.expected_goals ? '#4ade80' : '#f87171', fontSize: '11px'}}>
+                        {selectedPlayer.goals > selectedPlayer.expected_goals ? '↑ Overperforming' : selectedPlayer.goals < selectedPlayer.expected_goals ? '↓ Underperforming (unlucky!)' : '= As Expected'}
+                      </div>
+                    </div>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{color: '#9ca3af', fontSize: '12px'}}>Expected Assists (xA)</div>
+                      <div style={{color: '#fbbf24', fontSize: '20px', fontWeight: 'bold'}}>{selectedPlayer.expected_assists.toFixed(2)}</div>
+                      <div style={{color: selectedPlayer.assists > selectedPlayer.expected_assists ? '#4ade80' : '#f87171', fontSize: '11px'}}>
+                        {selectedPlayer.assists > selectedPlayer.expected_assists ? '↑ Overperforming' : selectedPlayer.assists < selectedPlayer.expected_assists ? '↓ Underperforming (unlucky!)' : '= As Expected'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '16px', marginBottom: '20px'}}>
+                  <h3 style={{color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px'}}>Value Analysis</h3>
+                  <div style={{marginBottom: '12px'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '4px'}}>
+                      <span style={{color: '#e9d5ff', fontSize: '13px'}}>Points Per Million</span>
+                      <span style={{color: 'white', fontWeight: 'bold'}}>{(selectedPlayer.total_points / selectedPlayer.price).toFixed(2)}</span>
+                    </div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '4px'}}>
+                      <span style={{color: '#e9d5ff', fontSize: '13px'}}>Ownership</span>
+                      <span style={{color: 'white', fontWeight: 'bold'}}>{selectedPlayer.selected_by}%</span>
+                    </div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '4px'}}>
+                      <span style={{color: '#e9d5ff', fontSize: '13px'}}>Minutes Played</span>
+                      <span style={{color: 'white', fontWeight: 'bold'}}>{selectedPlayer.minutes}</span>
+                    </div>
+                  </div>
+                  <div style={{background: selectedPlayer.selected_by < 10 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255, 255, 255, 0.1)', padding: '12px', borderRadius: '8px', border: selectedPlayer.selected_by < 10 ? '1px solid rgba(234, 179, 8, 0.5)' : 'none'}}>
+                    <div style={{color: selectedPlayer.selected_by < 10 ? '#fbbf24' : '#e9d5ff', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px'}}>
+                      {selectedPlayer.selected_by < 10 ? '💎 UNDERRATED GEM!' : selectedPlayer.selected_by > 30 ? '📈 Highly Owned' : '👥 Moderate Ownership'}
+                    </div>
+                    <div style={{color: '#9ca3af', fontSize: '12px'}}>
+                      {selectedPlayer.selected_by < 10 
+                        ? 'This player is owned by less than 10% of managers - a potential differential pick!'
+                        : selectedPlayer.selected_by > 30
+                        ? 'This is a popular pick - consider alternatives for differentials.'
+                        : 'Decent ownership level - not too template, not too risky.'}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{background: 'rgba(147, 51, 234, 0.2)', borderRadius: '12px', padding: '16px'}}>
+                  <h3 style={{color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '8px'}}>💡 Recommendation</h3>
+                  <p style={{color: '#e9d5ff', fontSize: '14px', lineHeight: '1.6', margin: 0}}>
+                    {selectedPlayer.valueScore >= 15 && selectedPlayer.momentum === 'hot'
+                      ? '🔥 MUST BUY! Elite value with hot form - top priority transfer.'
+                      : selectedPlayer.valueScore >= 12 && selectedPlayer.selected_by < 10
+                      ? '💎 HIDDEN GEM! Great value with low ownership - excellent differential pick.'
+                      : selectedPlayer.valueScore >= 12
+                      ? '⭐ STRONG PICK! Excellent value - highly recommended for your team.'
+                      : selectedPlayer.valueScore >= 9 && selectedPlayer.momentum === 'hot'
+                      ? '🔥 TRENDING UP! Decent value with improving form - monitor closely.'
+                      : selectedPlayer.valueScore >= 9
+                      ? '✅ SOLID OPTION! Good value - reliable choice for your squad.'
+                      : selectedPlayer.momentum === 'cold'
+                      ? '⚠️ AVOID! Poor recent form - wait for improvement before buying.'
+                      : '👍 BUDGET OPTION! Acceptable value for bench or enabler role.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div style={styles.banner}>
           <Zap size={20} />
           <span style={{fontWeight: 'bold'}}>LIVE MODE</span>
@@ -502,7 +637,7 @@ export default function FPLDashboard() {
           </h2>
           <div style={styles.gemsGrid}>
             {hotPlayers.map(player => (
-              <div key={player.id} style={{...styles.gemCard, borderColor: 'rgba(239, 68, 68, 0.5)'}} className="gem-card">
+              <div key={player.id} style={{...styles.gemCard, borderColor: 'rgba(239, 68, 68, 0.5)'}} className="gem-card" onClick={() => setSelectedPlayer(player)}>
                 <div style={{color: '#fbbf24', fontWeight: 'bold', fontSize: '16px', marginBottom: '4px'}}>{player.name}</div>
                 <div style={{color: 'white', fontSize: '13px', marginBottom: '8px'}}>{player.team}</div>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
@@ -532,7 +667,7 @@ export default function FPLDashboard() {
           </h2>
           <div style={styles.gemsGrid}>
             {underratedGems.map(player => (
-              <div key={player.id} style={styles.gemCard} className="gem-card">
+              <div key={player.id} style={styles.gemCard} className="gem-card" onClick={() => setSelectedPlayer(player)}>
                 <div style={{color: '#fbbf24', fontWeight: 'bold', fontSize: '16px', marginBottom: '4px'}}>{player.name}</div>
                 <div style={{color: 'white', fontSize: '13px', marginBottom: '8px'}}>{player.team}</div>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
@@ -613,7 +748,7 @@ export default function FPLDashboard() {
           <h2 style={styles.sectionTitle}>All Players ({filteredPlayers.length})</h2>
           <div style={styles.playersGrid}>
             {filteredPlayers.map(player => (
-              <div key={player.id} style={styles.playerCard} className="player-card">
+              <div key={player.id} style={styles.playerCard} className="player-card" onClick={() => setSelectedPlayer(player)}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px'}}>
                   <div style={{flex: 1, minWidth: 0}}>
                     <h3 style={{color: 'white', fontWeight: 'bold', fontSize: '16px', margin: '0 0 4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{player.name}</h3>
