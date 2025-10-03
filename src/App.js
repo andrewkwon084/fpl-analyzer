@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, Shield, Users, DollarSign, Zap, Filter, Download, BarChart3, TrendingDown } from 'lucide-react';
+import { Search, TrendingUp, Shield, Users, DollarSign, Zap, Filter, Download, TrendingDown } from 'lucide-react';
 
 const styles = {
   app: {
@@ -220,16 +220,6 @@ const styles = {
     animation: 'spin 1s linear infinite',
     marginBottom: '16px'
   },
-  badge: {
-    background: 'rgba(234, 179, 8, 0.3)',
-    color: '#fbbf24',
-    fontSize: '10px',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-    marginTop: '4px'
-  },
   trendingBadge: {
     background: 'rgba(34, 197, 94, 0.3)',
     color: '#4ade80',
@@ -274,7 +264,6 @@ export default function FPLDashboard() {
   const [minPrice, setMinPrice] = useState(4);
   const [sortBy, setSortBy] = useState('value');
   const [securityLog, setSecurityLog] = useState([]);
-  const [fixtureData, setFixtureData] = useState({});
 
   const addSecurityLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
@@ -326,7 +315,7 @@ export default function FPLDashboard() {
     const startTime = Date.now();
     try {
       addSecurityLog('Bypassing CORS with proxy...', 'info');
-      const corsProxy = 'https://api.allorigins.win/raw?url=';
+      const corsProxy = 'https://corsproxy.io/?';
       const apiUrl = 'https://fantasy.premierleague.com/api/bootstrap-static/';
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -340,10 +329,8 @@ export default function FPLDashboard() {
       if (!data.elements || !data.teams) throw new Error('Invalid data structure');
       
       const teamsMap = {};
-      const teamDifficulty = {};
       data.teams.forEach(team => {
         teamsMap[team.id] = team.name;
-        teamDifficulty[team.id] = team.strength || 3;
       });
       
       const positions = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'};
@@ -351,7 +338,6 @@ export default function FPLDashboard() {
         const playerData = {
           id: player.id,
           name: player.web_name,
-          full_name: player.first_name + ' ' + player.second_name,
           team: teamsMap[player.team],
           position: positions[player.element_type],
           price: player.now_cost / 10,
@@ -363,15 +349,8 @@ export default function FPLDashboard() {
           goals: player.goals_scored,
           assists: player.assists,
           clean_sheets: player.clean_sheets,
-          bonus: player.bonus || 0,
-          bps: player.bps || 0,
-          influence: parseFloat(player.influence) || 0,
-          creativity: parseFloat(player.creativity) || 0,
-          threat: parseFloat(player.threat) || 0,
-          ict_index: parseFloat(player.ict_index) || 0,
           expected_goals: parseFloat(player.expected_goals) || 0,
           expected_assists: parseFloat(player.expected_assists) || 0,
-          expected_goal_involvements: parseFloat(player.expected_goal_involvements) || 0,
           valueScore: 0,
           momentum: 'stable'
         };
@@ -419,8 +398,7 @@ export default function FPLDashboard() {
     avgPrice: filteredPlayers.length > 0 ? (filteredPlayers.reduce((sum, p) => sum + p.price, 0) / filteredPlayers.length).toFixed(1) : '0.0',
     avgValue: filteredPlayers.length > 0 ? (filteredPlayers.reduce((sum, p) => sum + p.valueScore, 0) / filteredPlayers.length).toFixed(2) : '0.00',
     topValue: filteredPlayers[0]?.valueScore || 0,
-    hotPlayers: players.filter(p => p.momentum === 'hot').length,
-    coldPlayers: players.filter(p => p.momentum === 'cold').length
+    hotPlayers: players.filter(p => p.momentum === 'hot').length
   };
 
   const exportToCSV = () => {
