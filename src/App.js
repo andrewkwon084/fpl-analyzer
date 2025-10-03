@@ -706,9 +706,7 @@ export default function FPLDashboard() {
           </div>
         </div>
         <div style={styles.footer}>
-          <p>Built with React • Powered by Official FPL API • Cybersecurity Demo Project</p>
-          <p style={{marginTop: '4px'}}>🔒 CORS Bypass • Timeout Protection • Rate Limiting • Input Validation</p>
-          <p style={{marginTop: '8px', color: '#86efac'}}>✅ Features: Hot Streak Detection • xG/xA Analysis • CSV Export • Advanced Filtering</p>
+          <p>Built with React - Powered by Official FPL API - Informatics Project</p>
         </div>
       </div>
     </div>
